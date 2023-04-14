@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SymRecipe - Mes ingrédients{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Mes ingrédients</h1>
+
+        {% if not ingredients.items is same as ([]) %} {# Permet d'afficher qu'il n'y a pas d'ingrédients dans le tableau si la base est vide #}
+        
+        <div class="count">
+            <small>Nombre d'ingrédients : {{ ingredients.getTotalItemCount }}</small>
+        </div>
+
+        {# !!!!! Message flash Symfony !!!!! #}
+        {# {% for message in app.flashes('success') %}
+            <div class="alert alert-success mt-4">
+                {{ message }}
+            </div>
+        {% endfor %} #}
+
+
+        {# !!!!! MESSAGE FLASH SWEAT ALERT !!!!! #}
+        {% for message in app.flashes('success') %}          {# success = Nom de l'alerte  #}
+            <div class="alert alert-success mt-4">           {# alert-sucess = Type d'alerte Bootstrap #}
+                <h5>{{ message.info }}</h5>
+                {{message.bonus}}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('warning') %}          {# warning = Nom de l'alerte  #}
+            <div class="alert alert-warning mt-4">           {# alert-warning = Type d'alerte Bootstrap #}
+                <h5>{{ message.info }}</h5>
+                {{message.bonus}}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('danger') %}          {# danger = Nom de l'alerte  #}
+            <div class="alert alert-danger mt-4">           {# alert-danger = Type d'alerte Bootstrap #}
+                <h5>{{ message.info }}</h5>
+                {{message.bonus}}
+            </div>
+        {% endfor %}
+
+
+
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">Numéro</th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prix</th>
+                    <th scope="col">Date de création</th>
+                    <th scope="col">Edition</th>
+                    <th scope="col">Suppression</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ingredient in ingredients %}
+                    <tr class="table-primary">
+                        <th scope="row">{{ ingredient.id }}</th>
+                        <td>{{ ingredient.name }}</td>
+                        <td>{{ ingredient.price }}</td>
+                        <td>{{ ingredient.createdAt|date("d/m/Y") }}</td>  
+                        {# Attention ! Il faut mettre un filtre pour la date : "|date("d/m/Y")" sinon une erreur apparait #}
+                        <td><a href="{{ path('ingredient.edit', { id: ingredient.id }) }}" class="btn btn-info">Modifier</a></td>
+                        <td><a href="{{ path('ingredient.delete', { id: ingredient.id }) }}" class="btn btn-danger supp" id="id_lien_supprimer_ingredient">Supprimer</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table> 
+
+
+        {# Script JS de confirmation pour la suppression d'un ingredient (version "classique")
+        <script> 
+        
+            const confirmation_supprimer = document.querySelectorAll(".supp");
+            
+            confirmation_supprimer.forEach(element => {
+                element.addEventListener("click", confirmDelete)
+            });
+
+            function confirmDelete(e)
+            {
+                if(!confirm('Voulez-vous supprimer cet ingrédient ?')) 
+                {
+                    e.preventDefault();
+                }
+            }
+        </script> #}
+
+
+        {# Liens vers la librairie SweetAlert et le code JS associé à la confirmation de suppression #}
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/js/sweetAlert_DeleteIngredient.js"></script>
+
+
+        {# Pour les numéros de pages de la pagination #}
+        <div class="navigation mt-4">
+            {{ knp_pagination_render(ingredients) }}
+        </div>
+
+        {% else %}
+            <p>Il n'y a pas d'ingrédients enregistrés...</p>
+        {% endif %}
+
+        {# Bouton "Ajouter un ingrédient" #}
+        <a href="{{ path('ingredient.new') }}" class="btn btn-primary mb-4">Ajouter un ingrédient</a>
+
+    </div>
+    
+{% endblock %}
