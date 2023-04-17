@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class IngredientController extends AbstractController
 {
-    #[Route('/ingredient', name: 'app_ingredient', methods: ['GET'])]
+    #[Route('/ingredient', name: 'ingredient.index', methods: ['GET'])]
     /**
      * This function display all ingredients
      * 
@@ -67,7 +67,7 @@ class IngredientController extends AbstractController
                 ['info' => 'Ajout !','bonus' => "L'ingrédient \"" . $ingredient->getName() . "\" a bien été ajouté"]  // Message(s)
             );
 
-            return $this->redirectToRoute('app_ingredient');
+            return $this->redirectToRoute('ingredient.index');
         }
 
         return $this->render('pages/ingredient/new.html.twig',[
@@ -107,7 +107,7 @@ class IngredientController extends AbstractController
                 ['info' => 'Modification !','bonus' => "L'ingrédient \"" . $ingredient->getName() . "\" a bien été modifié"]  // Message(s)
             );
 
-            return $this->redirectToRoute('app_ingredient');
+            return $this->redirectToRoute('ingredient.index');
         }
 
         return $this->render('pages/ingredient/edit.html.twig', [
@@ -121,11 +121,10 @@ class IngredientController extends AbstractController
      * This function delete the selected ingredient when click on the "Supprimer" button
      *
      * @param Ingredient $ingredient
-     * @param Request $request
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function delete(Ingredient $ingredient, Request $request, EntityManagerInterface $manager): Response
+    public function delete(Ingredient $ingredient, EntityManagerInterface $manager): Response
     {
         $manager->remove($ingredient);
         $manager->flush();
@@ -138,7 +137,7 @@ class IngredientController extends AbstractController
         );
         
 
-        return $this->redirectToRoute('app_ingredient');
+        return $this->redirectToRoute('ingredient.index');
     }
 }
 

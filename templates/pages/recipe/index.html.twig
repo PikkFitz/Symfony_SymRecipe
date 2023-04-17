@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SymRecipe - Mes ingrédients{% endblock %}
+{% block title %}SymRecipe - Mes recettes{% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1>Mes ingrédients</h1>
+        <h1>Mes recettes</h1>
 
-        {% if not ingredients.items is same as ([]) %} {# Permet d'afficher qu'il n'y a pas d'ingrédients dans le tableau si la base est vide #}
+        {% if not recipes.items is same as ([]) %} {# Permet d'afficher qu'il n'y a pas d'ingrédients dans le tableau si la base est vide #}
         
         <div class="count">
-            <small>Nombre d'ingrédients : {{ ingredients.getTotalItemCount }}</small>
+            <small>Nombre de recettes : {{ recipes.getTotalItemCount }}</small>
         </div>
 
 
@@ -43,21 +43,23 @@
                     <th scope="col">Numéro</th>
                     <th scope="col">Nom</th>
                     <th scope="col">Prix</th>
+                    <th scope="col">Difficulté</th>
                     <th scope="col">Date de création</th>
                     <th scope="col">Edition</th>
                     <th scope="col">Suppression</th>
                 </tr>
             </thead>
             <tbody>
-                {% for ingredient in ingredients %}
+                {% for recipe in recipes %}
                     <tr class="table-primary">
-                        <th scope="row">{{ ingredient.id }}</th>
-                        <td>{{ ingredient.name }}</td>
-                        <td>{{ ingredient.price }}</td>
-                        <td>{{ ingredient.createdAt|date("d/m/Y") }}</td>  
+                        <th scope="row">{{ recipe.id }}</th>
+                        <td>{{ recipe.name }}</td>
+                        <td>{{ (recipe.price is null) ? 'Non renseigné' : recipe.price}}</td>
+                        <td>{{ (recipe.difficulty is null) ? 'Non renseignée' : recipe.difficulty }}</td>
+                        <td>{{ recipe.createdAt|date("d/m/Y") }}</td>  
                         {# Attention ! Il faut mettre un filtre pour la date : "|date("d/m/Y")" sinon une erreur apparait #}
-                        <td><a href="{{ path('ingredient.edit', { id: ingredient.id }) }}" class="btn btn-info">Modifier</a></td>
-                        <td><a href="{{ path('ingredient.delete', { id: ingredient.id }) }}" class="btn btn-danger supp" id="id_lien_supprimer_ingredient">Supprimer</a></td>
+                        <td><a href="{{ path('recipe.edit', { id: recipe.id }) }}" class="btn btn-info">Modifier</a></td>
+                        <td><a href="{{ path('recipe.delete', { id: recipe.id }) }}" class="btn btn-danger supp" id="id_lien_supprimer_recette">Supprimer</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -85,21 +87,22 @@
 
         {# Liens vers la librairie SweetAlert et le code JS associé à la confirmation de suppression #}
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="/js/sweetAlert_DeleteIngredient.js"></script>
+        <script src="/js/sweetAlert_DeleteRecipe.js"></script>
 
 
         {# Pour les numéros de pages de la pagination #}
         <div class="navigation mt-4">
-            {{ knp_pagination_render(ingredients) }}
+            {{ knp_pagination_render(recipes) }}
         </div>
 
         {% else %}
-            <p>Il n'y a pas d'ingrédients enregistrés...</p>
+            <p>Il n'y a pas de recettes enregistrées...</p>
         {% endif %}
 
-        {# Bouton "Ajouter un ingrédient" #}
-        <a href="{{ path('ingredient.new') }}" class="btn btn-primary mb-4">Ajouter un ingrédient</a>
+        {# Bouton "Ajouter une recette" #}
+        <a href="{{ path('recipe.new') }}" class="btn btn-primary mb-4">Ajouter une recette</a>
 
     </div>
     
 {% endblock %}
+
