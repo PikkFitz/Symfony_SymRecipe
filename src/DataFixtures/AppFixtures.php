@@ -4,10 +4,12 @@ namespace App\DataFixtures;
 
 use Faker\Factory;
 use Faker\Generator;
+use App\Entity\User;
 use App\Entity\Recipe;
 use App\Entity\Ingredient;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -39,7 +41,7 @@ class AppFixtures extends Fixture
 
         // !!!!! RECIPES !!!!!
         
-        for ($j=1; $j <= 20 ; $j++) 
+        for ($j=1; $j <= 20; $j++) 
         { 
             $recipe = new Recipe();
             $recipe->setName($this->faker->word(2, true));  // 2 --> Nombre de mots générés | true --> Retourne un 'string' au lieu d'un 'array' (tableau)
@@ -56,6 +58,20 @@ class AppFixtures extends Fixture
             }
             
             $manager->persist($recipe);
+        }
+
+        // !!!!! USERS !!!!
+
+        for ($l=0; $l <= 30; $l++) 
+        { 
+            $user = new User();
+            $user->setFullName($this->faker->name);
+            $user->setPseudo(mt_rand(0, 1) === 1 ? $this->faker->firstName() : null);
+            $user->setEmail($this->faker->email());
+            $user->setRoles(['ROLE_USER']);
+            $user->setPlainPassword('password');
+
+            $manager->persist($user);
         }
 
         $manager->flush();
