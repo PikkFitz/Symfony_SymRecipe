@@ -6,6 +6,14 @@
     <div class="container">
         <h1 class="mt-4">Formulaire de connexion</h1>
 
+        {# !!!!! MESSAGE FLASH !!!!! #}
+        {% for message in app.flashes('success') %}          {# success = Nom de l'alerte  #}
+            <div class="alert alert-success mt-4">           {# alert-sucess = Type d'alerte Bootstrap #}
+                <h5>{{ message.info }}</h5>
+                {{message.bonus}}
+            </div>
+        {% endfor %}
+
         {% if error %}
             <div class="alert alert-danger mt-4">
                 {{ error.messageKey|trans(error.messageData, 'security') }}
