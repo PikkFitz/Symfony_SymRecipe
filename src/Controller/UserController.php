@@ -72,7 +72,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/utilisateur/edition-mot-de-passe/{id}', name: 'user.edit.password', methods: ['GET', 'POST'])]
-    public function editPassword(User $user, Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $manager) : Response
+    /**
+     * This function allow us to modify the user's password
+     *
+     * @param User $user
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @param UserPasswordHasherInterface $hasher
+     * @return Response
+     */
+    public function editPassword(User $user, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher) : Response
     {
         if (!$this->getUser()) 
         {
@@ -83,7 +92,7 @@ class UserController extends AbstractController
         {
             return $this->redirectToRoute('recipe.index');
         }
-        
+
         $form = $this->createForm(UserPasswordType::class);
 
         $form->handleRequest($request);
@@ -92,7 +101,12 @@ class UserController extends AbstractController
         {
             if ($hasher->isPasswordValid($user, $form->getData()['plainPassword'])) 
             {
-                $user->setPassword($hasher->hashPassword($user, $form->getData()['newPassword']));
+                $user->setUpdatedAt(new \DateTimeImmutable()); // Nécessaire de modifier cette colonne pour que le 'plainPassword' se mette à jour
+                                                               // Car le 'plainPassword' n'est pas une colonne
+
+                // $user->setPassword($hasher->hashPassword($user, $form->getData()['newPassword']));
+                $user->setPlainPassword($form->getData()['newPassword']); // Necessite de mettre à jour une colonne de la table pour se mettre à jour
+                                                                          // Ici, on met à jour la colonne 'UpdatedAt'
 
                 $manager->persist($user);
                 $manager->flush();
