@@ -9,38 +9,32 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
     #[Route('/utilisateur/edition/{id}', name: 'user.edit', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER') and user === choosenUser")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de modification du profil 
+    // ET SEULEMENT l'utilisateur à qui "appartient" ce profil
     /**
      * This function allow us to edit user's profil
      *
-     * @param User $user
+     * @param User $choosenUser
      * @param Request $request
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
+    public function edit(User $choosenUser, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher): Response
     {
-        if (!$this->getUser()) 
-        {
-            return $this->redirectToRoute('security.login');
-        }
-
-        if ($this->getUser() !== $user)
-        {
-            return $this->redirectToRoute('recipe.index');
-        }
-
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $choosenUser);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) 
         {
-            if ($hasher->isPasswordValid($user, $form->getData()->getPlainPassword())) 
+            if ($hasher->isPasswordValid($choosenUser, $form->getData()->getPlainPassword())) 
             {
                 $user = $form->getData();
                 $manager->persist($user);
@@ -72,26 +66,30 @@ class UserController extends AbstractController
     }
 
     #[Route('/utilisateur/edition-mot-de-passe/{id}', name: 'user.edit.password', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER') and user === choosenUser")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de modification du mot de passe
+    // ET SEULEMENT l'utilisateur à qui "appartient" ce mot de passe
     /**
      * This function allow us to modify the user's password
      *
-     * @param User $user
+     * @param User $choosenUser
      * @param Request $request
      * @param EntityManagerInterface $manager
      * @param UserPasswordHasherInterface $hasher
      * @return Response
      */
-    public function editPassword(User $user, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher) : Response
+    public function editPassword(User $choosenUser, Request $request, EntityManagerInterface $manager, UserPasswordHasherInterface $hasher) : Response
     {
-        if (!$this->getUser()) 
-        {
-            return $this->redirectToRoute('security.login');
-        }
+        // REDIRECTION SANS UTILISER "Security"
+        // if (!$this->getUser()) 
+        // {
+        //     return $this->redirectToRoute('security.login');
+        // }
 
-        if ($this->getUser() !== $user)
-        {
-            return $this->redirectToRoute('recipe.index');
-        }
+        // if ($this->getUser() !== $user)
+        // {
+        //     return $this->redirectToRoute('recipe.index');
+        // }
 
         $form = $this->createForm(UserPasswordType::class);
 
@@ -99,16 +97,16 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) 
         {
-            if ($hasher->isPasswordValid($user, $form->getData()['plainPassword'])) 
+            if ($hasher->isPasswordValid($choosenUser, $form->getData()['plainPassword'])) 
             {
-                $user->setUpdatedAt(new \DateTimeImmutable()); // Nécessaire de modifier cette colonne pour que le 'plainPassword' se mette à jour
+                $choosenUser->setUpdatedAt(new \DateTimeImmutable()); // Nécessaire de modifier cette colonne pour que le 'plainPassword' se mette à jour
                                                                // Car le 'plainPassword' n'est pas une colonne
 
                 // $user->setPassword($hasher->hashPassword($user, $form->getData()['newPassword']));
-                $user->setPlainPassword($form->getData()['newPassword']); // Necessite de mettre à jour une colonne de la table pour se mettre à jour
+                $choosenUser->setPlainPassword($form->getData()['newPassword']); // Necessite de mettre à jour une colonne de la table pour se mettre à jour
                                                                           // Ici, on met à jour la colonne 'UpdatedAt'
 
-                $manager->persist($user);
+                $manager->persist($choosenUser);
                 $manager->flush();
 
                 // !!!!! Message flash : Modification mot de passe utilisateur !!!!!

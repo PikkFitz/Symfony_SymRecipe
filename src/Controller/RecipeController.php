@@ -10,11 +10,14 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RecipeController extends AbstractController
 {
     #[Route('/recette', name: 'recipe.index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
     /**
      * This function display all recipes
      *
@@ -26,7 +29,7 @@ class RecipeController extends AbstractController
     public function index(RecipeRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
         $recipes = $paginator->paginate(
-            $repository->findAll(),
+            $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1), /* Nombre de page */
             10 /* Limite d'éléments par page */
         );
@@ -37,6 +40,7 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recette/creation', name: 'recipe.new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
     /**
      * This function show a form to create a recipe (add a recipe to the list)
      *
@@ -54,6 +58,7 @@ class RecipeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) 
         {
             $recipe = $form->getData();
+            $recipe->setUser($this->getUser());
 
             $manager->persist($recipe);
             $manager->flush();
@@ -76,6 +81,9 @@ class RecipeController extends AbstractController
 
 
     #[Route('recette/edition/{id}', 'recipe.edit', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de modification des recettes 
+    // ET SEULEMENT l'utilisateur à qui "appartiennent" ces recettes
     /**
      * This function show a form to edit a recipe when click on the "Modifier" button
      *

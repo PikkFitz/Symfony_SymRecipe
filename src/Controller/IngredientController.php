@@ -10,11 +10,14 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class IngredientController extends AbstractController
 {
     #[Route('/ingredient', name: 'ingredient.index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
     /**
      * This function display all ingredients
      * 
@@ -26,7 +29,7 @@ class IngredientController extends AbstractController
     public function index(IngredientRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
         $ingredients = $paginator->paginate(
-            $repository->findAll(),
+            $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1), /* Nombre de page */
             10 /* Limite d'éléments par page */
         );
@@ -38,6 +41,7 @@ class IngredientController extends AbstractController
 
     
     #[Route('ingredient/nouveau', 'ingredient.new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
     /**
      * This function show a form to create an ingredient (add an ingredient to the list)
      *
@@ -55,6 +59,7 @@ class IngredientController extends AbstractController
         if ($form->isSubmitted() && $form->isValid())
         {
             $ingredient = $form->getData();
+            $ingredient->setUser($this->getUser());
             // dd($ingredient);
 
             $manager->persist($ingredient);
@@ -77,6 +82,9 @@ class IngredientController extends AbstractController
    
 
     #[Route('ingredient/edition/{id}', 'ingredient.edit', methods: ['GET', 'POST'])]
+    #[Security("is_granted('ROLE_USER') and user === ingredient.getUser()")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de modification des ingrédients 
+    // ET SEULEMENT l'utilisateur à qui "appartiennent" ces ingrédients
     /**
      * This function show a form to edit an ingredient when click on the "Modifier" button
      *
