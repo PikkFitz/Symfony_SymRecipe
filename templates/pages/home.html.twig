@@ -4,15 +4,40 @@
 
 {% block body %}
 
-<div class="container mt-4">
-    <div class="jumbotron">
-        <h1 class="display-4">Bienvenue sur SymRecipe !</h1>
-        <p class="lead">SymRecipe est une application qui va te permettre de créer des recettes à base d'ingrédients que tu auras toi-même créer. 
-        Tu pourras partager tes recettes à la communauté du site, ou bien les garder en privé.</p>
-        <hr class="my-4">
-        <p>Rendez-vous sur la page d'inscription pour commencer à utiliser l'application !</p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Inscription</a>
+    <div class="container mt-4">
+
+        <div class="jumbotron">
+            <h1 class="display-4">Bienvenue sur SymRecipe !</h1>
+            <p class="lead">SymRecipe est une application qui va te permettre de créer des recettes à base d'ingrédients que tu auras toi-même créer. 
+            Tu pourras partager tes recettes à la communauté du site, ou bien les garder en privé.</p>
+            <hr class="my-4">
+            <p>Rendez-vous sur la page d'inscription pour commencer à utiliser l'application !</p>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Inscription</a>
+        </div>
+    
+
+        <div class="recipes">
+            <h3 class="mt-4">Recettes de la communauté :</h3>
+            
+            <div class="d-flex justify-content-around flex-wrap">
+            
+                {% for recipe in recipes %}
+
+                    <div class="card border-primary mb-3" style="max-width: 20rem;">
+                        <div class="card-header">Recette n°{{ recipe.id }}</div>
+                        <div class="card-body">
+                            <h4 class="card-title">{{ recipe.name }}</h4>
+                            <p class="card-text">{{ recipe.description|slice(0, 100) ~ '...' }}</p>
+                            {# Le filtre slice sert à couper la description si celle-ci est trop longue #}
+                            {# Ici, la description est coupée après le 100ème charactère et il y a "..." à la fin #}
+                        </div>
+                    </div>
+                                        
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
-</div>
+
 
 {% endblock %}

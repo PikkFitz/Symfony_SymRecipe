@@ -3,8 +3,9 @@
 namespace App\DataFixtures;
 
 use Faker\Factory;
-use Faker\Generator;
+use App\Entity\Mark;
 use App\Entity\User;
+use Faker\Generator;
 use App\Entity\Recipe;
 use App\Entity\Ingredient;
 use Doctrine\Persistence\ObjectManager;
@@ -59,6 +60,8 @@ class AppFixtures extends Fixture
         }
 
         // !!!!! RECIPES !!!!!
+
+        $recipes = [];
         
         for ($j=1; $j <= 20; $j++) 
         { 
@@ -70,6 +73,7 @@ class AppFixtures extends Fixture
             $recipe->setDescription($this->faker->text(200)); // 200 --> Nombre de mots générés
             $recipe->setPrice(mt_rand(0, 1) == 1 ? mt_rand(1, 1000) : null);
             $recipe->setIsFavorite(mt_rand(0, 1) == 1 ? true : false);
+            $recipe->setIsPublic(mt_rand(0, 1) == 1 ? true : false);
 
             $recipe->setUser($users[mt_rand(0, count($users) - 1)]);
 
@@ -78,8 +82,27 @@ class AppFixtures extends Fixture
                 $recipe->addIngredient($ingredients[mt_rand(0, count($ingredients)-1)]);
             }
             
+            $recipes[] = $recipe;
+
             $manager->persist($recipe);
         }
+
+        // !!!!! MARKS !!!!!
+
+        foreach ($recipes as $recipe) 
+        {
+            for ($i=0; $i < mt_rand(0,4); $i++) // Chaque recette aura entre 0 et 4 notes
+            { 
+                $mark = new Mark();
+                $mark->setMark(mt_rand(1, 5)) // Note aléatoire comprise entre 1 et 5
+                ->setUser($users[mt_rand(0, count($users)-1)]) // Attribution de la note par un Utilisateur aléatoire parmis tous les utilisateurs
+                ->setRecipe($recipe);
+
+                $manager->persist($mark);
+            }
+        }
+
+
 
         $manager->flush();
     }
