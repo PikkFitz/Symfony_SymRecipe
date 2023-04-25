@@ -10,7 +10,8 @@
 
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/united/bootstrap.min.css">
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.2.3/dist/united/_variables.scss">
-            {# <link rel="stylesheet" href="/style.css"> #}
+            
+            <link rel="stylesheet" href="/style.css">
 
         {% endblock %}
 
@@ -22,15 +23,17 @@
     </head>
     <body>
         {% block header %}
-        
             {% include "partials/_header.html.twig" %}
-        
         {% endblock %}
 
         {% block body %}
         
             
         
+        {% endblock %}
+
+        {% block footer %}
+            {% include "partials/_footer.html.twig" %}
         {% endblock %}
     </body>
 </html>

@@ -42,26 +42,71 @@ class RecipeController extends AbstractController
         ]);
     }
 
-    #[Route('/recette/publique', name: 'recipe.index.public', methods: ['GET'])]
+
+    #[Route('/recette/creation', name: 'recipe.new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
+    /**
+     * This function show a form to create a recipe (add a recipe to the list)
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
+    public function new(Request $request, EntityManagerInterface $manager) : Response
+    {
+        $recipe = new Recipe();
+        $form = $this->createForm(RecipeType::class, $recipe);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) 
+        {
+            $recipe = $form->getData();
+            $recipe->setUser($this->getUser());
+
+            $manager->persist($recipe);
+            $manager->flush();
+
+            // !!!!! Message flash : Ajout recette !!!!!
+            $this->addFlash    // Nécessite un block "for message" dans index.html.twig pour fonctionner
+            (
+                'success',  // Nom de l'alerte 
+                ['info' => 'Ajout !','bonus' => "La recette \"" . $recipe->getName() . "\" a bien été ajoutée"]  // Message(s)
+            );
+
+            return $this->redirectToRoute('recipe.index');
+        }
+
+
+        return $this->render('pages/recipe/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+
+    #[Route('/recette/communaute', name: 'recipe.community', methods: ['GET'])]
     // Accès à tous les utilisateurs (connectés ou non)
     public function indexPublic(
         RecipeRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
         $recipes = $paginator->paginate(
-            $repository->findPublicRecipe(null),
+            $repository->findPublicRecipe(null), 
+            // La fonction findPublicRecipe() à été créée dans RecipeRepository 
+            // Et sert à trouver les recettes "publiques" et les classe par date de création décroissante
             $request->query->getInt('page', 1), /* Nombre de page */
             10
         );
 
-        return $this->render('pages/recipe/index_public.html.twig', [
+        return $this->render('pages/recipe/community.html.twig', [
             'recipes' => $recipes
         ]);
     }
 
+
     #[Route('/recette/{id}', name: 'recipe.show', methods: ['GET', 'POST'])]
-    #[Security("is_granted('ROLE_USER') and recipe.getIsPublic() == true")]
+    #[Security("is_granted('ROLE_USER') and recipe.getIsPublic() == true || user === recipe.getUser()")]
     // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de modification des recettes 
-    // ET SI la rectte est publique
+    // ET SI la recette est publique OU Si l'utilisateur est celui qui à créé le recette
     /**
      * This function allow us to see a recipe if this one is public
      *
@@ -120,46 +165,6 @@ class RecipeController extends AbstractController
         ]);
     }
 
-    #[Route('/recette/creation', name: 'recipe.new', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
-    /**
-     * This function show a form to create a recipe (add a recipe to the list)
-     *
-     * @param Request $request
-     * @param EntityManagerInterface $manager
-     * @return Response
-     */
-    public function new(Request $request, EntityManagerInterface $manager) : Response
-    {
-        $recipe = new Recipe();
-        $form = $this->createForm(RecipeType::class, $recipe);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) 
-        {
-            $recipe = $form->getData();
-            $recipe->setUser($this->getUser());
-
-            $manager->persist($recipe);
-            $manager->flush();
-
-            // !!!!! Message flash : Ajout recette !!!!!
-            $this->addFlash    // Nécessite un block "for message" dans index.html.twig pour fonctionner
-            (
-                'success',  // Nom de l'alerte 
-                ['info' => 'Ajout !','bonus' => "La recette \"" . $recipe->getName() . "\" a bien été ajoutée"]  // Message(s)
-            );
-
-            return $this->redirectToRoute('recipe.index');
-        }
-
-
-        return $this->render('pages/recipe/new.html.twig', [
-            'form' => $form->createView()
-        ]);
-    }
-
 
     #[Route('recette/edition/{id}', 'recipe.edit', methods: ['GET', 'POST'])]
     #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
@@ -205,6 +210,9 @@ class RecipeController extends AbstractController
 
 
     #[Route('recette/suppression/{id}', 'recipe.delete', methods: ['GET'])]
+    #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de suppresion d'une recette 
+    // ET SEULEMENT l'utilisateur à qui "appartient" cette recette
     /**
      * This function delete the selected recipe when click on the "Supprimer" button
      *

@@ -40,7 +40,7 @@ class IngredientController extends AbstractController
     }
 
     
-    #[Route('ingredient/nouveau', 'ingredient.new', methods: ['GET', 'POST'])]
+    #[Route('ingredient/creation', 'ingredient.new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')] // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés)
     /**
      * This function show a form to create an ingredient (add an ingredient to the list)
@@ -125,6 +125,9 @@ class IngredientController extends AbstractController
 
    
     #[Route('ingredient/suppression/{id}', 'ingredient.delete', methods: ['GET'])]
+    #[Security("is_granted('ROLE_USER') and user === ingredient.getUser()")]
+    // Autorise uniquement les personnes ayant le 'ROLE_USER' (utilisateurs connectés) à accéder à la page de suppresion d'un ingrédient 
+    // ET SEULEMENT l'utilisateur à qui "appartient" cet ingrédient
     /**
      * This function delete the selected ingredient when click on the "Supprimer" button
      *

@@ -6,12 +6,9 @@
     <div class="container mt-4">
         <h1>Mes ingrédients</h1>
 
-        {% if not ingredients.items is same as ([]) %} {# Permet d'afficher qu'il n'y a pas d'ingrédients dans le tableau si la base est vide #}
-        
         <div class="count">
-            <small>Nombre d'ingrédients : {{ ingredients.getTotalItemCount }}</small>
+            <small>Nombre d'ingrédient(s) : {{ ingredients.getTotalItemCount }}</small>
         </div>
-
 
         {# !!!!! MESSAGE FLASH !!!!! #}
         {% for message in app.flashes('success') %}          {# success = Nom de l'alerte  #}
@@ -35,7 +32,7 @@
             </div>
         {% endfor %}
 
-
+        {% if not ingredients.items is same as ([]) %} {# Permet d'afficher qu'il n'y a pas d'ingrédients dans le tableau si la base est vide #}
 
         <table class="table table-hover mt-4">
             <thead>
@@ -53,7 +50,7 @@
                     <tr class="table-primary">
                         <th scope="row">{{ ingredient.id }}</th>
                         <td>{{ ingredient.name }}</td>
-                        <td>{{ ingredient.price }}</td>
+                        <td>{{ ingredient.price|number_format(2, '.', ',')  }} €</td>
                         <td>{{ ingredient.createdAt|date("d/m/Y") }}</td>  
                         {# Attention ! Il faut mettre un filtre pour la date : "|date("d/m/Y")" sinon une erreur apparait #}
                         <td><a href="{{ path('ingredient.edit', { id: ingredient.id }) }}" class="btn btn-info">Modifier</a></td>
@@ -94,7 +91,7 @@
         </div>
 
         {% else %}
-            <p>Il n'y a pas d'ingrédients enregistrés...</p>
+            <p class="mt-4">Il n'y a pas d'ingrédients enregistrés...</p>
         {% endif %}
 
         {# Bouton "Ajouter un ingrédient" #}

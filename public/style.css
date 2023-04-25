@@ -1,0 +1,19 @@
+.form-image img
+{
+    width: 25%;
+}
+
+/* body
+{
+    flex-direction: column;
+    display: flex;
+    min-height: 100vh;
+    justify-content: space-between;
+} */
+
+footer 
+{
+    position:absolute;
+    bottom:0;  /* on le colle en bas */
+    width:100%;
+}
