@@ -55,7 +55,7 @@ class RegistrationType extends AbstractType
                     'minlength' => '2',
                     'maxlength' => '180'
                 ],
-                'label' => 'Adress email',
+                'label' => 'Adresse email',
                 'label_attr' => [
                     'class' => 'form-label mt-4'
                 ],

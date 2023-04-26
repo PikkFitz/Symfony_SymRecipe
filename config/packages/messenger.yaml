@@ -11,12 +11,12 @@ framework:
                     check_delayed_interval: 60000
                 retry_strategy:
                     max_retries: 3
-                    multiplier: 2
+                    # multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
         routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            # Symfony\Component\Mailer\Messenger\SendEmailMessage: async
             Symfony\Component\Notifier\Message\ChatMessage: async
             Symfony\Component\Notifier\Message\SmsMessage: async
 
