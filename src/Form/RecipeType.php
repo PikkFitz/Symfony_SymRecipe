@@ -69,7 +69,7 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'min' => 1,
-                    'max' => 50
+                    'max' => 50,
                 ],
                 'required' => false,
                 'label' => 'Nombre de personnes',
@@ -85,12 +85,12 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'class' => 'form-range',
                     'min' => 1,
-                    'max' => 5
+                    'max' => 100,
                 ],
                 'required' => false,
                 'label' => 'Difficulté',
                 'label_attr' => [
-                    'class' => 'form-label mt-4'
+                    'class' => 'form-label mt-4',
                 ],
                 'constraints' => [
                     new Assert\Positive(),
