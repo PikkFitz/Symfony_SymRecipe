@@ -1,6 +1,6 @@
 <?php
 
-namespace App\tests\Unit;
+namespace App\Tests\Unit;
 
 use App\Entity\Mark;
 use App\Entity\User;
@@ -18,7 +18,7 @@ class RecipeTest extends KernelTestCase
             ->setUpdatedAt(new \DateTimeImmutable());
     }
 
-
+    // TEST ENTITE RECETTE INVALIDE
     public function testEntityIsValid(): void
     {
         self::bootKernel();
@@ -31,7 +31,7 @@ class RecipeTest extends KernelTestCase
         $this->assertCount(0, $errors);  // Pour que le test soit valide uniquement si il y a n erreurs (ici 0)
     }
 
-
+    // TEST NOM DE RECETTE INVALIDE
     public function testInvalidName()
     {
         self::bootKernel();
@@ -47,14 +47,14 @@ class RecipeTest extends KernelTestCase
                                          // puisque dans Recipe.php, nous lui demandons d'être NotBlank et d'avoir une taille min = 2)
     }
 
-
+    // TEST MOYENNE D'UNE NOTE
     public function testGetAverage()
     {
         $recipe = $this->getEntity();
 
         $user = static::getContainer()->get('doctrine.orm.entity_manager')->find(User::class, 1); // User id =1
 
-        for ($i=0; $i < 5; $i++) 
+        for ($i=0; $i < 5; $i++)
         { 
             $mark = new Mark();
             $mark->setMark(2)

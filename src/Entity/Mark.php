@@ -93,4 +93,12 @@ class Mark
 
         return $this;
     }
+
+    public function setYes($yes) // Necessaire pour le test : testGetAverage()
+    {
+        $this->yes = $yes;
+
+        return $this;
+    }
+
 }
