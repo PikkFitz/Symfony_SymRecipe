@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ContactTest extends WebTestCase
 {
-    public function testSomething(): void
+    public function testIfSubmitContactFormIsSuccessful(): void
     {
         $client = static::createClient();
         
@@ -32,12 +32,12 @@ class ContactTest extends WebTestCase
         // SOUMETTRE LE FORMULAIRE
         
 
-        $test = $client->submit($form);
+        $client->submit($form);
         // dd($test);
         
         // VERIFIER LE STATUT HTTP
         
-        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);  // CODE : 302 | MESSAGE : FOUND
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);  // CODE : 302 | MESSAGE : FOUND ==> Message de redirection OK
         
         // VERIFIER L'ENVOI DU MAIL
         
