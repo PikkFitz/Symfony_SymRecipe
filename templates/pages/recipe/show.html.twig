@@ -22,7 +22,7 @@
 
         <div class="mt-4">
             {% if recipe.time %}
-                <p>Temps (en minutes) : {{ recipe.time }}</p>
+                <p>Temps (en minutes) : {{ recipe.time|min_to_hour }}</p>  {# min_to_hour --> Extension Twig créée dans src/Twig/AppExtension #}
             {% else %}
                 <p>Temps : non renseigné</p>
             {% endif %}

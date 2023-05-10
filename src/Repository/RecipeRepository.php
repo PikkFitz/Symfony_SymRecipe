@@ -47,6 +47,9 @@ class RecipeRepository extends ServiceEntityRepository
      */
     public function findPublicRecipe(?int $nbRecipes) : array
     {
+        sleep(3); // Tempo de 3s (/!\ Uniquement tester le cache des recettes de la communauté (RecipeController.php), 
+                  // créé des problèmes de performances pour le site /!\)
+
         $queryBuilder = $this->createQueryBuilder('r')
             ->where('r.isPublic = 1')
             ->orderBy('r.createdAt', 'DESC');

@@ -9,10 +9,12 @@ use App\Form\RecipeType;
 use App\Repository\MarkRepository;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -89,8 +91,18 @@ class RecipeController extends AbstractController
     public function indexPublic(
         RecipeRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
+        // !!!!!  POUR LE CACHE  !!!!!
+        $cache = new FilesystemAdapter(); 
+        $data = $cache->get('recipes', function(ItemInterface $item) use($repository)  // recipes -> clé  | Si aucune valeur n'est donnée via la clé, 
+                                                                                       // alors la fonction get() utilise la fonction ItemIterface pour collecter les données
+        {
+            $item->expiresAfter(15);  // Temps d'expiration du cache (ici, 15 secondes)
+            return $repository->findPublicRecipe(null); // Récupère les recettes publiques
+        });
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         $recipes = $paginator->paginate(
-            $repository->findPublicRecipe(null), 
+            $data, 
             // La fonction findPublicRecipe() à été créée dans RecipeRepository 
             // Et sert à trouver les recettes "publiques" et les classe par date de création décroissante
             $request->query->getInt('page', 1), /* Nombre de page */

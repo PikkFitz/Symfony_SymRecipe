@@ -50,7 +50,7 @@
                 {% for recipe in recipes %}
                     <tr class="table-primary">
                         <th scope="row">{{ recipe.id }}</th>
-                        <td>{{ recipe.name }}</td>
+                        <td><a href="{{ path('recipe.show', {id: recipe.id}) }}">{{ recipe.name }}</a></td>
                         <td>
                             {% if recipe.price is null %}
                                 Non renseigné
