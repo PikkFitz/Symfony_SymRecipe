@@ -85,7 +85,7 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'class' => 'form-range',
                     'min' => 1,
-                    'max' => 100,
+                    'max' => 5,
                 ],
                 'required' => false,
                 'label' => 'Difficulté',

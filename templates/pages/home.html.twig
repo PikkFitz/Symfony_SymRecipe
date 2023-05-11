@@ -34,6 +34,11 @@
                             <p class="card-text">{{ recipe.description|slice(0, 100) ~ '...' }}</p>
                             {# Le filtre slice sert à couper la description si celle-ci est trop longue #}
                             {# Ici, la description est coupée après le 100ème charactère et il y a "..." à la fin #}
+                            {% if recipe.image %}
+                            <div class="recipe_image mt-2">
+                                <img style="max-width: 25%" src="{{ vich_uploader_asset(recipe, 'imageFile') }}">
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                                         

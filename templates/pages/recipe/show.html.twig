@@ -54,16 +54,22 @@
 
         <div class="mt-4">{{ recipe.description|raw }}</div>
 
-        <p class="mt-4">Ingrédients :</p>
-        {% for ingredient in recipe.ingredients %}
-            <span class="badge bg-primary">{{ ingredient.name }}</span>
-        {% endfor %}
+        <div class="mt-4">
+            {% if recipe.price %}
+                <p>Ingrédients :</p>
+                {% for ingredient in recipe.ingredients %}
+                    <span class="badge bg-primary">{{ ingredient.name }}</span>
+                {% endfor %}
+            {% else %}
+                <p>Ingrédients : non renseignés</p>
+            {% endif %}
+        </div>
 
-        <div class="recipe_image">
+        <div class="recipe_image mt-2">
             <img style="max-width: 25%" src="{{ vich_uploader_asset(recipe, 'imageFile') }}">
         </div>
 
-        <div class="mark">
+        <div class="mark mt-2">
             {{ form(form) }}
         </div>
 
