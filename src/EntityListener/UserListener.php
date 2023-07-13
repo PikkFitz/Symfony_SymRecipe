@@ -14,9 +14,12 @@ class UserListener
         $this->hasher = $hasher;
     }
 
-    public function prePersist(User $user)
+    public function prePersist(User $user)  // Permet d'encoder le password quand $user est persisté (se déclenche au premier persist) 
+                                            // (en récupérant le plainPassword donné dans AppFixtures)
     {
-        $this->encodePassword($user);
+        $this->encodePassword($user);  // Permet d'encoder le password quand $user est modifié 
+                                       // (en récupérant le plainPassword donné dans AppFixtures)
+        // (se déclenche au flush(), mais nécessite une modification de colonne pour être déclenché ! Exemple : la colonne 'updatedAt") 
     }
 
     public function preUpdate(User $user)

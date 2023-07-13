@@ -61,7 +61,7 @@ class AppFixtures extends Fixture
 
         $ingredients = [];
         
-        for ($i=1; $i <= 50; $i++) 
+        for ($i=1; $i <= 50; $i++)  // On génère 50 ingrédients
         { 
             $ingredient = new Ingredient();
             $ingredient->setName($this->faker->word(1, true));  // 1 --> Nombre de mots générés | true --> Retourne un 'string' au lieu d'un 'array' (tableau)
@@ -77,7 +77,7 @@ class AppFixtures extends Fixture
 
         $recipes = [];
         
-        for ($j=1; $j <= 20; $j++) 
+        for ($j=1; $j <= 20; $j++)  // On génère 20 recettes
         { 
             $recipe = new Recipe();
             $recipe->setName($this->faker->word(2, true));  // 2 --> Nombre de mots générés | true --> Retourne un 'string' au lieu d'un 'array' (tableau)
